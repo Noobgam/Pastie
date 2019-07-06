@@ -1,11 +1,21 @@
-plugins {
-    id 'java'
-}
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 group 'noobgam'
 version '0.1-BETA'
 
 sourceCompatibility = 1.12
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE")
+    }
+}
 
 repositories {
     mavenCentral()
@@ -27,7 +37,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
-
+    compile("org.springframework.boot:spring-boot-starter-web")
 }
 
 
