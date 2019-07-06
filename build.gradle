@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'noobgam'
+version '0.1-BETA'
+
+sourceCompatibility = 1.12
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+dependencies {
+    compile 'org.mongodb:mongodb-driver-async:3.10.2'
+    compile 'org.eclipse.jetty:jetty-server:9.4.19.v20190610'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    // https://mvnrepository.com/artifact/it.unimi.dsi/fastutil
+    compile group: 'it.unimi.dsi', name: 'fastutil', version: '8.1.0'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.0'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+
+}
+
+
