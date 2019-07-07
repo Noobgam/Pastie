@@ -1,20 +1,22 @@
 package me.noobgam.pastie.main.paste;
 
 import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonProperty;
 
 public class Paste {
     @BsonId
     private String id;
 
-    @BsonProperty
+    private String owner;
+
     private String content;
 
     public Paste(
             @BsonId String id,
+            String owner,
             String content
     ) {
         this.id = id;
+        this.owner = owner;
         this.content = content;
     }
 
@@ -26,11 +28,19 @@ public class Paste {
         return content;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

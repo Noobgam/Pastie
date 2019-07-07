@@ -1,5 +1,7 @@
 package me.noobgam.pastie.main.jetty;
 
+import org.bson.types.ObjectId;
+
 import java.util.Random;
 
 public final class Utils {
@@ -8,7 +10,7 @@ public final class Utils {
 
     private static ThreadLocal<Random> R =
             ThreadLocal.withInitial(
-                    Random::new
+                    () -> new Random(ObjectId.get().hashCode())
             );
 
     public static String getRandomString(int len, String alphabet) {

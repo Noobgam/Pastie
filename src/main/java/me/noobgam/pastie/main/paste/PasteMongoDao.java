@@ -23,4 +23,9 @@ public class PasteMongoDao implements PasteDao {
     public CompletableFuture<Optional<Paste>> findById(String id) {
         return collection.findById(id);
     }
+
+    @Override
+    public CompletableFuture<Void> insertOne(Paste paste) {
+        return collection.insertOne(paste);
+    }
 }

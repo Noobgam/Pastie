@@ -1,5 +1,6 @@
 package me.noobgam.pastie.core.mongo;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoNamespace;
 import com.mongodb.ReadPreference;
 import com.mongodb.async.SingleResultCallback;
@@ -43,11 +44,12 @@ public class MongoAsyncCollectionX<TId, TEntity> {
             Class<?>... extraClasses
     ) {
         codecRegistry = CodecRegistries.fromRegistries(
+                MongoClientSettings.getDefaultCodecRegistry(),
                 CodecRegistries.fromProviders(
                         PojoCodecProvider.builder()
                                 .conventions(DEFAULT_CONVENTIONS)
                                 .register(entityClass)
-                                .register(extraClasses).automatic(true).build()
+                                .register(extraClasses).build()
                 )
         );
         this.collection = mongoCollection.withCodecRegistry(codecRegistry);

@@ -8,4 +8,6 @@ public interface PasteDao {
     CompletableFuture<List<Paste>> findAll();
 
     CompletableFuture<Optional<Paste>> findById(String id);
+
+    CompletableFuture<Void> insertOne(Paste paste);
 }

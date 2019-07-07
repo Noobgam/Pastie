@@ -1,7 +1,9 @@
 package me.noobgam.pastie.main;
 
 import me.noobgam.pastie.core.properties.PropertiesHolder;
+import me.noobgam.pastie.main.api.PostPasteAction;
 import me.noobgam.pastie.main.jetty.PingHandler;
+import me.noobgam.pastie.main.paste.PasteDao;
 import me.noobgam.pastie.main.paste.PasteDaoContextConfiguration;
 import me.noobgam.pastie.utils.MainSupport;
 import org.apache.logging.log4j.LogManager;
@@ -26,12 +28,17 @@ public class Core extends MainSupport {
         Server server = new Server(
                 PropertiesHolder.getIntProperty("core.port")
         );
-        ContextHandler contextHandler = new ContextHandler();
-        contextHandler.setContextPath("/ping");
-        contextHandler.setHandler(new PingHandler(() -> ready));
+
+        ContextHandler pingHandler = new ContextHandler();
+        pingHandler.setContextPath("/ping");
+        pingHandler.setHandler(new PingHandler(() -> ready));
+
+        ContextHandler pasteHandler = new ContextHandler();
+        pasteHandler.setContextPath("/paste");
+        pasteHandler.setHandler(new PostPasteAction(context.getBean(PasteDao.class)));
 
         ContextHandlerCollection handlerColl = new ContextHandlerCollection();
-        handlerColl.setHandlers(new Handler[]{contextHandler});
+        handlerColl.setHandlers(new Handler[]{pingHandler, pasteHandler});
         server.setHandler(handlerColl);
         try {
             server.start();
