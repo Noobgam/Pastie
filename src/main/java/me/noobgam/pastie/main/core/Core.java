@@ -1,10 +1,7 @@
-package me.noobgam.pastie.main;
+package me.noobgam.pastie.main.core;
 
 import me.noobgam.pastie.core.properties.PropertiesHolder;
-import me.noobgam.pastie.main.api.PostPasteAction;
-import me.noobgam.pastie.main.jetty.PingHandler;
-import me.noobgam.pastie.main.paste.PasteDao;
-import me.noobgam.pastie.main.paste.PasteDaoContextConfiguration;
+import me.noobgam.pastie.main.api.*;
 import me.noobgam.pastie.utils.MainSupport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +9,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+
+import java.util.Arrays;
 
 public class Core extends MainSupport {
 
@@ -23,27 +22,36 @@ public class Core extends MainSupport {
         new Core().injectRun(args);
     }
 
+    private ContextHandlerCollection collectHandlers(Class<?>... classes) {
+        return new ContextHandlerCollection(
+                Arrays.stream(classes).map(clazz -> {
+                    Handler bean = (Handler) context.getBean(clazz);
+                    ActionContainer annotation =
+                            clazz.getAnnotation(ActionContainer.class);
+                    ContextHandler contextHandler = new ContextHandler();
+                    contextHandler.setContextPath(annotation.value());
+                    contextHandler.setHandler(bean);
+                    return contextHandler;
+                }).toArray(ContextHandler[]::new)
+        );
+    }
+
     @Override
     public void run(String[] args) {
         Server server = new Server(
                 PropertiesHolder.getIntProperty("core.port")
         );
-
-        ContextHandler pingHandler = new ContextHandler();
-        pingHandler.setContextPath("/ping");
-        pingHandler.setHandler(new PingHandler(() -> ready));
-
-        ContextHandler pasteHandler = new ContextHandler();
-        pasteHandler.setContextPath("/paste");
-        pasteHandler.setHandler(new PostPasteAction(context.getBean(PasteDao.class)));
-
-        ContextHandlerCollection handlerColl = new ContextHandlerCollection();
-        handlerColl.setHandlers(new Handler[]{pingHandler, pasteHandler});
-        server.setHandler(handlerColl);
+        server.setHandler(
+                collectHandlers(
+                        PostPasteAction.class,
+                        AuthAction.class,
+                        PingAction.class
+                )
+        );
         try {
             server.start();
         } catch (Exception e) {
-            logger.fatal("Jetty failed to start {}", e);
+            logger.fatal("Jetty fail to start {}", e);
             return;
         }
         try {
@@ -56,7 +64,7 @@ public class Core extends MainSupport {
     @Override
     public Class<?>[] getApplicationContexts() {
         return new Class<?>[]{
-                PasteDaoContextConfiguration.class
+                ActionContainerContextConfiguration.class
         };
     }
 }

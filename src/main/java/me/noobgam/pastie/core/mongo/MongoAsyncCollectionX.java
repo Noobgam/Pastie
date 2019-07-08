@@ -1,5 +1,6 @@
 package me.noobgam.pastie.core.mongo;
 
+import com.mongodb.Block;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoNamespace;
 import com.mongodb.ReadPreference;
@@ -30,6 +31,9 @@ import java.util.concurrent.TimeUnit;
  * @author noobgam
  */
 public class MongoAsyncCollectionX<TId, TEntity> {
+
+    public static final Bson EMPTY_FILTER = new BsonDocument();
+
     private static final UpdateOptions UPSERT = new UpdateOptions().upsert(true);
     private static final List<Convention> DEFAULT_CONVENTIONS =
             Collections.singletonList(new ConventionAnnotationWrappingImpl());
@@ -115,6 +119,19 @@ public class MongoAsyncCollectionX<TId, TEntity> {
     }
 
     /**
+     * Find one by filter
+     *
+     * @param filter filter
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public CompletableFuture<Optional<TEntity>> findOneByFilter(Bson filter) {
+        FindOneParseFutureCallback<TEntity> callback = new FindOneParseFutureCallback<>();
+        prepareIterable(filter, null, 0, 1, null, null).first(callback);
+        return callback.getFuture();
+    }
+
+    /**
      * Find by id
      *
      * @param id document
@@ -140,6 +157,56 @@ public class MongoAsyncCollectionX<TId, TEntity> {
         FindOneParseFutureCallback<TProjection> callback = new FindOneParseFutureCallback<>();
         prepareProjectIterable(Filters.eq("_id", id), null, -1, -1, null, null, projection, clazz).first(callback);
         return callback.getFuture();
+    }
+
+    /**
+     * Find by bson
+     *
+     * @param filter     document
+     * @param projection projection
+     * @param clazz      resulting class
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public <TProjection> CompletableFuture<List<TProjection>> find(Bson filter, Bson projection, Class<TProjection> clazz) {
+        CompletableFuture<List<TProjection>> result = new CompletableFuture<>();
+        List<TProjection> items = new ArrayList<>();
+        prepareProjectIterable(filter, null, -1, -1, null, null, projection, clazz)
+                .forEach(items::add, (dummy, ex) -> {
+                    if (ex != null) {
+                        result.completeExceptionally(ex);
+                    } else {
+                        result.complete(items);
+                    }
+                });
+        return result;
+    }
+
+    /**
+     * Find by bson
+     *
+     * @param filter     document
+     * @param projection projection
+     * @param clazz      resulting class
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public <TProjection> CompletableFuture<Void> forEach(
+            Bson filter,
+            Bson projection,
+            Class<TProjection> clazz,
+            Block<? super TProjection> consumer
+    ) {
+        SimpleFutureCallback<Void> result = new SimpleFutureCallback<>();
+        prepareProjectIterable(filter, null, -1, -1, null, null, projection, clazz)
+                .forEach(consumer, (dummy, ex) -> {
+                    if (ex != null) {
+                        result.getFuture().completeExceptionally(ex);
+                    } else {
+                        result.getFuture().complete(null);
+                    }
+                });
+        return result.getFuture();
     }
 
     /**

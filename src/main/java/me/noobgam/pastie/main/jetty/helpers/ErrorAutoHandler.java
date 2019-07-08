@@ -1,7 +1,9 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.noobgam.pastie.core.env.Environment;
 import me.noobgam.pastie.main.jetty.ExceptionResponse;
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Request;
@@ -14,7 +16,7 @@ import java.io.IOException;
 
 public abstract class ErrorAutoHandler extends AbstractHandler {
 
-    protected final Logger logger = LogManager.getLogger(ErrorAutoHandler.class);
+    private final Logger logger = LogManager.getLogger(ErrorAutoHandler.class);
 
     protected final ObjectMapper mapper = new ObjectMapper();
 
@@ -27,13 +29,27 @@ public abstract class ErrorAutoHandler extends AbstractHandler {
     ) throws IOException, ServletException {
         try {
             handle2(new RequestContext(target, baseRequest, request, response));
-        } catch (Exception e) {
-            logger.error("Exception occured: {}", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException e) {
+            logger.error("Exception occurred: {}", e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             baseRequest.setHandled(true);
             response.getWriter().println(
                     mapper.writeValueAsString(new ExceptionResponse(e))
             );
+            throw e;
+        } catch (Exception e) {
+            logger.error("Exception occurred: {}", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            baseRequest.setHandled(true);
+            if (Environment.ENV != Environment.Type.PROD) {
+                response.getWriter().println(
+                        mapper.writeValueAsString(new ExceptionResponse(e))
+                );
+            } else {
+                response.getWriter().println(
+                        mapper.writeValueAsString(SuccessResponse.fail())
+                );
+            }
             throw e;
         }
     }

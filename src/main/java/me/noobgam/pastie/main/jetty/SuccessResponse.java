@@ -9,6 +9,10 @@ public class SuccessResponse extends RequestResponse {
         this.result = result;
     }
 
+    public static SuccessResponse fail() {
+        return new SuccessResponse(false, "error");
+    }
+
     public static SuccessResponse notReady() {
         return new SuccessResponse(false, "not ready");
     }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 
 public class RequestContext {
 
@@ -32,6 +33,10 @@ public class RequestContext {
         this.baseRequest = baseRequest;
         this.request = request;
         this.response = response;
+    }
+
+    public Map<String, String> getUrlParams() {
+        return QueryUtils.splitToUrlParams(request.getQueryString());
     }
 
     public String getTarget() {

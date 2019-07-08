@@ -8,20 +8,19 @@ import me.noobgam.pastie.main.jetty.helpers.ErrorAutoHandler;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
 import me.noobgam.pastie.main.paste.Paste;
 import me.noobgam.pastie.main.paste.PasteDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+@ActionContainer("/paste")
 public class PostPasteAction extends ErrorAutoHandler {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
     private PasteDao pasteDao;
-
-    public PostPasteAction(PasteDao pasteDao) {
-        this.pasteDao = pasteDao;
-    }
 
     @Override
     public void handle2(RequestContext requestContext) throws IOException, ServletException {
