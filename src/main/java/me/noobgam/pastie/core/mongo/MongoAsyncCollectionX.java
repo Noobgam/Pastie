@@ -6,6 +6,7 @@ import com.mongodb.MongoNamespace;
 import com.mongodb.ReadPreference;
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.AggregateIterable;
+import com.mongodb.async.client.ClientSession;
 import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -106,6 +107,22 @@ public class MongoAsyncCollectionX<TId, TEntity> {
     }
 
     /**
+     * Insert one document transformed from entity
+     *
+     * @param entity document
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public CompletableFuture<Void> insertOne(
+            TEntity entity,
+            ClientSession clientSession
+    ) {
+        SimpleFutureCallback<Void> callback = new SimpleFutureCallback<>();
+        collection.insertOne(clientSession, entity, callback);
+        return callback.getFuture();
+    }
+
+    /**
      * Insert many documents transformed from entity
      *
      * @param entities documents
@@ -157,6 +174,27 @@ public class MongoAsyncCollectionX<TId, TEntity> {
         FindOneParseFutureCallback<TProjection> callback = new FindOneParseFutureCallback<>();
         prepareProjectIterable(Filters.eq("_id", id), null, -1, -1, null, null, projection, clazz).first(callback);
         return callback.getFuture();
+    }
+
+    /**
+     * Find by bson
+     *
+     * @param filter document
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public CompletableFuture<List<TEntity>> find(Bson filter) {
+        CompletableFuture<List<TEntity>> result = new CompletableFuture<>();
+        List<TEntity> items = new ArrayList<>();
+        prepareIterable(filter, null, -1, -1, null, null)
+                .forEach(items::add, (dummy, ex) -> {
+                    if (ex != null) {
+                        result.completeExceptionally(ex);
+                    } else {
+                        result.complete(items);
+                    }
+                });
+        return result;
     }
 
     /**
@@ -336,7 +374,7 @@ public class MongoAsyncCollectionX<TId, TEntity> {
      *
      * @param <T> callback result type
      */
-    private static class SimpleFutureCallback<T> implements SingleResultCallback<T> {
+    public static class SimpleFutureCallback<T> implements SingleResultCallback<T> {
 
         private final CompletableFuture<T> future = new CompletableFuture<>();
 

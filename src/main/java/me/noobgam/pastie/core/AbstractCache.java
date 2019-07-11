@@ -1,6 +1,5 @@
 package me.noobgam.pastie.core;
 
-import com.mongodb.lang.Nullable;
 import me.noobgam.pastie.main.core.ReadinessChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +29,7 @@ public abstract class AbstractCache<T> implements Runnable {
         thread = new Thread(this, this.getClass().getCanonicalName());
     }
 
+
     @PostConstruct
     public void init() {
         if (waitForCacheOnStartup()) {
@@ -43,9 +43,10 @@ public abstract class AbstractCache<T> implements Runnable {
         thread.start();
     }
 
-
-    @Nullable
     public T getCached() {
+        if (cached == null) {
+            throw new RuntimeException("No cached value");
+        }
         return cached;
     }
 

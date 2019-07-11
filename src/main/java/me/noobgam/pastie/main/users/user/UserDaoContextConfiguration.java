@@ -1,4 +1,4 @@
-package me.noobgam.pastie.main.users;
+package me.noobgam.pastie.main.users.user;
 
 import com.mongodb.async.client.MongoClient;
 import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;

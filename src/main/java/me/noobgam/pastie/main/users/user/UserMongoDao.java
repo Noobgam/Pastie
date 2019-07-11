@@ -1,5 +1,6 @@
-package me.noobgam.pastie.main.users;
+package me.noobgam.pastie.main.users.user;
 
+import com.mongodb.async.client.ClientSession;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -17,6 +18,11 @@ public class UserMongoDao implements UserDao {
 
     public UserMongoDao(MongoAsyncCollectionX<ObjectId, User> collection) {
         this.collection = collection;
+    }
+
+    @Override
+    public CompletableFuture<Optional<User>> findById(ObjectId id) {
+        return collection.findById(id);
     }
 
     @Override
@@ -41,5 +47,12 @@ public class UserMongoDao implements UserDao {
                 String.class,
                 strings::add
         ).thenApply(v -> strings);
+    }
+
+    public CompletableFuture<Void> createUser(
+            User user,
+            ClientSession clientSession
+    ) {
+        return collection.insertOne(user, clientSession);
     }
 }

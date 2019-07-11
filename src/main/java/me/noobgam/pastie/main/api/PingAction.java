@@ -1,15 +1,14 @@
 package me.noobgam.pastie.main.api;
 
 import me.noobgam.pastie.main.jetty.SuccessResponse;
-import me.noobgam.pastie.main.jetty.helpers.ErrorAutoHandler;
+import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
+import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.util.function.Supplier;
 
 @ActionContainer("/ping")
-public class PingAction extends ErrorAutoHandler {
+public class PingAction implements AbstractHandler2 {
 
     private final Supplier<Boolean> isReadyF;
 
@@ -18,12 +17,13 @@ public class PingAction extends ErrorAutoHandler {
     }
 
     @Override
-    public void handle2(RequestContext requestContext) throws IOException, ServletException {
+    public RequestContext handle(RequestContext requestContext) {
         boolean ready = isReadyF.get();
         if (ready) {
             requestContext.success(SuccessResponse.pong());
         } else {
             requestContext.respond(409, SuccessResponse.pong());
         }
+        return requestContext;
     }
 }
