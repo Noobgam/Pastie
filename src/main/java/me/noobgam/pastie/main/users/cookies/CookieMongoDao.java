@@ -5,6 +5,7 @@ import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;
 import org.bson.types.ObjectId;
 
 import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -25,5 +26,16 @@ public class CookieMongoDao implements CookieDao {
     @Override
     public CompletableFuture<List<Cookie>> findAll() {
         return collection.findAll();
+    }
+
+    @Override
+    public CompletableFuture<Void> storeCookie(ObjectId userId, javax.servlet.http.Cookie cookie) {
+        return collection.insertOne(
+                new Cookie(
+                        cookie.getValue(),
+                        userId,
+                        cookie.getMaxAge() == -1 ? null : Instant.now().plusSeconds(cookie.getMaxAge())
+                )
+        );
     }
 }

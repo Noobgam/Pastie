@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
 import me.noobgam.pastie.main.jetty.PasteResponse;
 import me.noobgam.pastie.main.jetty.Utils;
-import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
-import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
-import me.noobgam.pastie.main.jetty.helpers.Pipeline;
-import me.noobgam.pastie.main.jetty.helpers.RequestContext;
+import me.noobgam.pastie.main.jetty.helpers.*;
+import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.paste.Paste;
 import me.noobgam.pastie.main.paste.PasteDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 @ActionContainer("/paste")
-@Pipeline(LoginAction.class)
+@Pipeline(AuthAction.class)
 public class PostPasteAction implements AbstractHandler2 {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -34,10 +32,10 @@ public class PostPasteAction implements AbstractHandler2 {
             );
             return requestContext;
         }
+        AuthenticatedRequestContextHolder contextHolder = (AuthenticatedRequestContextHolder) requestContext;
         Paste paste = new Paste(
                 Utils.getRandomAlNum(6),
-                // TODO(noobgam): you know this ain't right.
-                "noobgam",
+                contextHolder.getUser().getUsername(),
                 requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n"))
         );
         pasteDao.insertOne(paste).join();

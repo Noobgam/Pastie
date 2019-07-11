@@ -44,7 +44,7 @@ public class AuthAction implements AbstractHandler2 {
         );
     }
 
-    private boolean cookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
+    private static boolean cookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
         return cookie != null
                 && cookie.isHttpOnly()
                 && cookie.getSecure()

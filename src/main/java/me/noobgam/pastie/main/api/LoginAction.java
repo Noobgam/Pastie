@@ -3,14 +3,18 @@ package me.noobgam.pastie.main.api;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
+import me.noobgam.pastie.main.users.cookies.CookieDao;
 import me.noobgam.pastie.main.users.security.UserPassword;
 import me.noobgam.pastie.main.users.security.UserPasswordDao;
 import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
+import me.noobgam.pastie.utils.RandomUtils;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +32,9 @@ public class LoginAction implements AbstractHandler2 {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private CookieDao cookieDao;
 
     @Autowired
     private UserPasswordDao userPasswordDao;
@@ -63,6 +70,27 @@ public class LoginAction implements AbstractHandler2 {
             throw new IllegalArgumentException(BAD_PAIR);
         }
 
+        requestContext.addCookie(
+                generateCookie(userO.get().getId())
+        );
+        requestContext.getResponse().sendRedirect("https://pastie.noobgam.me");
+        requestContext.getBaseRequest().setHandled(true);
+
         return requestContext;
+    }
+
+    private Cookie generateCookie(ObjectId objectId) {
+        Cookie cookie = new Cookie(
+                "SID",
+                RandomUtils.generateSecureString()
+        );
+        cookie.setMaxAge(-1);
+        cookie.setDomain(".pastie.noobgam.me");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        cookieDao.storeCookie(objectId, cookie).join();
+
+        return cookie;
     }
 }
