@@ -39,6 +39,11 @@ public class ActionContainerContextConfiguration {
     }
 
     @Bean
+    public GetPasteAction getPasteAction() {
+        return new GetPasteAction();
+    }
+
+    @Bean
     public RegisterAction registerAction() {
         return new RegisterAction();
     }

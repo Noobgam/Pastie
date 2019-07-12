@@ -2,7 +2,7 @@ package me.noobgam.pastie.main.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
-import me.noobgam.pastie.main.jetty.PasteResponse;
+import me.noobgam.pastie.main.jetty.PostPasteResponse;
 import me.noobgam.pastie.main.jetty.Utils;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
@@ -39,7 +39,7 @@ public class PostPasteAction implements AbstractHandler2 {
                 requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n"))
         );
         pasteDao.insertOne(paste).join();
-        requestContext.success(new PasteResponse(paste.getId()));
+        requestContext.success(new PostPasteResponse(paste.getId()));
         return requestContext;
     }
 }

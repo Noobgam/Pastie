@@ -1,6 +1,7 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.noobgam.pastie.core.env.Environment;
 import me.noobgam.pastie.main.jetty.RequestResponse;
 import org.eclipse.jetty.server.Request;
 
@@ -97,10 +98,26 @@ public class RequestContextHolder implements RequestContext {
     @Override
     public void respond(Integer status, RequestResponse result) {
         try {
+            response.setContentType("application/json");
+            if (Environment.ENV == Environment.Type.DEV) {
+                response.addHeader("Access-Control-Allow-Origin", "*");
+            } else {
+                response.addHeader("Access-Control-Allow-Origin", "paste.noobgam.me");
+            }
             result.setHandleMs(Duration.between(start, Instant.now()).toMillis());
             response.setStatus(status);
             response.getWriter().println(mapper.writeValueAsString(result));
             baseRequest.setHandled(true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void redirect(String path, RequestResponse result) {
+        try {
+            respond(302, result);
+            response.sendRedirect(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

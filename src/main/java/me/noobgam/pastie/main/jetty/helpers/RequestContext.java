@@ -32,5 +32,7 @@ public interface RequestContext {
 
     void respond(Integer status, RequestResponse result);
 
+    void redirect(String path, RequestResponse result);
+
     boolean isHandled();
 }

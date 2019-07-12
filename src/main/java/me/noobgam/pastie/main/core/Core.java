@@ -35,7 +35,6 @@ public class Core extends MainSupport {
     private ContextHandlerCollection collectHandlers(Class<?>... classes) {
         return new ContextHandlerCollection(
                 Arrays.stream(classes).map(clazz -> {
-                    AbstractHandler2 bean = (AbstractHandler2) context.getBean(clazz);
                     ActionContainer containerAnnotation =
                             clazz.getAnnotation(ActionContainer.class);
                     Pipeline pipelineAnnotation = clazz.getAnnotation(Pipeline.class);
@@ -44,7 +43,7 @@ public class Core extends MainSupport {
                                     ? classPipeline(clazz)
                                     : classPipeline(pipelineAnnotation.value(), clazz);
                     ContextHandler contextHandler = new ContextHandler();
-                    contextHandler.setContextPath(containerAnnotation.value());
+                    contextHandler.setContextPath("/api" + containerAnnotation.value());
                     contextHandler.setHandler(new PipelineHandler(
                             containerAnnotation.handleErrors(),
                             Stream.of(pipeline)
@@ -66,7 +65,8 @@ public class Core extends MainSupport {
                         PostPasteAction.class,
                         LoginAction.class,
                         PingAction.class,
-                        RegisterAction.class
+                        RegisterAction.class,
+                        GetPasteAction.class
                 )
         );
         try {

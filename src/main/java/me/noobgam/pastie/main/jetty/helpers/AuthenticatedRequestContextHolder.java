@@ -76,6 +76,11 @@ public class AuthenticatedRequestContextHolder implements RequestContext {
     }
 
     @Override
+    public void redirect(String path, RequestResponse result) {
+        holder.redirect(path, result);
+    }
+
+    @Override
     public boolean isHandled() {
         return holder.isHandled();
     }

@@ -1,10 +1,10 @@
 package me.noobgam.pastie.main.api;
 
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
 import me.noobgam.pastie.main.users.cookies.CookieDao;
-import me.noobgam.pastie.main.users.security.UserPassword;
 import me.noobgam.pastie.main.users.security.UserPasswordDao;
 import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
@@ -61,20 +61,19 @@ public class LoginAction implements AbstractHandler2 {
             throw new IllegalArgumentException(BAD_PAIR);
         }
 
-        Optional<UserPassword> userPassword = userPasswordDao.findByIdAndPassword(
+        boolean validPair = userPasswordDao.validateCredentialPair(
                 userO.get().getId(),
                 DigestUtils.sha3_256(password)
         ).join();
 
-        if (userPassword.isEmpty()) {
+        if (!validPair) {
             throw new IllegalArgumentException(BAD_PAIR);
         }
 
         requestContext.addCookie(
                 generateCookie(userO.get().getId())
         );
-        requestContext.getResponse().sendRedirect("https://pastie.noobgam.me");
-        requestContext.getBaseRequest().setHandled(true);
+        requestContext.redirect("https://pastie.noobgam.me", SuccessResponse.success());
 
         return requestContext;
     }
@@ -84,8 +83,8 @@ public class LoginAction implements AbstractHandler2 {
                 "SID",
                 RandomUtils.generateSecureString()
         );
-        cookie.setMaxAge(-1);
-        cookie.setDomain(".pastie.noobgam.me");
+        cookie.setMaxAge(Integer.MAX_VALUE);
+        cookie.setDomain(".paste.noobgam.me");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
 

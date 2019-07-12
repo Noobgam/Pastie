@@ -9,6 +9,7 @@ import com.mongodb.async.client.AggregateIterable;
 import com.mongodb.async.client.ClientSession;
 import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoCollection;
+import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
@@ -119,6 +120,22 @@ public class MongoAsyncCollectionX<TId, TEntity> {
     ) {
         SimpleFutureCallback<Void> callback = new SimpleFutureCallback<>();
         collection.insertOne(clientSession, entity, callback);
+        return callback.getFuture();
+    }
+
+    /**
+     * Insert one document transformed from entity
+     *
+     * @param filter document
+     * @return {@link CompletableFuture<Void>} future
+     */
+    @CheckReturnValue
+    public CompletableFuture<Long> count(
+            Bson filter,
+            CountOptions countOptions
+    ) {
+        SimpleFutureCallback<Long> callback = new SimpleFutureCallback<>();
+        collection.countDocuments(filter, countOptions, callback);
         return callback.getFuture();
     }
 

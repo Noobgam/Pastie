@@ -1,14 +1,21 @@
 package me.noobgam.pastie.main.jetty;
 
-public class PasteResponse extends RequestResponse {
-    private final String pasteId;
+import me.noobgam.pastie.main.paste.Paste;
 
-    public PasteResponse(String pasteId) {
+public class PasteResponse extends RequestResponse {
+
+    private final Paste paste;
+
+    public PasteResponse(Paste paste) {
         super(true);
-        this.pasteId = pasteId;
+        this.paste = paste;
     }
 
-    public String getPasteId() {
-        return pasteId;
+    public String getContent() {
+        return paste.getContent();
+    }
+
+    public String getOwner() {
+        return paste.getOwner();
     }
 }

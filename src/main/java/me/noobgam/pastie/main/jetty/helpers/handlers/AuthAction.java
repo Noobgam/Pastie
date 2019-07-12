@@ -17,7 +17,7 @@ public class AuthAction implements AbstractHandler2 {
 
     public static final String AUTH_HEADER = "SID";
 
-    public static final String COOKIE_DOMAIN = ".pastie.noobgam.me";
+    public static final String COOKIE_DOMAIN = ".paste.noobgam.me";
 
     @Autowired
     private CookieDao cookieDao;
