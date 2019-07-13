@@ -7,6 +7,7 @@ public class RequestResponse {
     private final String requestId;
     private final boolean success;
     private long handleMs;
+    private int status;
 
     public RequestResponse(boolean success) {
         host = Environment.HOST;
@@ -30,7 +31,15 @@ public class RequestResponse {
         return handleMs;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
     public void setHandleMs(long handleMs) {
         this.handleMs = handleMs;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

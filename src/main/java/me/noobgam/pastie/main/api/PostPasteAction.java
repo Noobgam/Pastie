@@ -3,6 +3,7 @@ package me.noobgam.pastie.main.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
 import me.noobgam.pastie.main.jetty.PostPasteResponse;
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.Utils;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
@@ -25,6 +26,13 @@ public class PostPasteAction implements AbstractHandler2 {
 
     @Override
     public RequestContext handle(RequestContext requestContext) throws IOException, ServletException {
+        if (requestContext.getRequest().getMethod().equals("OPTIONS")) {
+            requestContext.respond(
+                    200,
+                    SuccessResponse.success()
+            );
+            return requestContext;
+        }
         if (!requestContext.getRequest().getMethod().equals("POST")) {
             requestContext.respond(
                     400,
@@ -36,7 +44,8 @@ public class PostPasteAction implements AbstractHandler2 {
         Paste paste = new Paste(
                 Utils.getRandomAlNum(6),
                 contextHolder.getUser().getUsername(),
-                requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n"))
+                requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n")),
+                requestContext.getHeader("X-Paste-Lang")
         );
         pasteDao.insertOne(paste).join();
         requestContext.success(new PostPasteResponse(paste.getId()));

@@ -104,7 +104,10 @@ public class RequestContextHolder implements RequestContext {
             } else {
                 response.addHeader("Access-Control-Allow-Origin", "paste.noobgam.me");
             }
+            response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            response.addHeader("Access-Control-Allow-Headers", "X-Paste-Lang");
             result.setHandleMs(Duration.between(start, Instant.now()).toMillis());
+            result.setStatus(status);
             response.setStatus(status);
             response.getWriter().println(mapper.writeValueAsString(result));
             baseRequest.setHandled(true);
