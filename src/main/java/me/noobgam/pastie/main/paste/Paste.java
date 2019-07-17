@@ -19,8 +19,8 @@ public class Paste {
             @BsonId String id,
             String owner,
             String content,
-            @Nullable String language,
-            ) {
+            @Nullable String language
+    ) {
         this.id = id;
         this.owner = owner;
         this.content = content;

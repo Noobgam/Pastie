@@ -44,30 +44,24 @@ public class PipelineHandler extends AbstractHandler {
             } catch (IllegalArgumentException ex) {
                 logger.error("Illegal request", ex);
                 if (errorHandling) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    baseRequest.setHandled(true);
-                    response.getWriter().println(
-                            mapper.writeValueAsString(new ExceptionResponse(ex))
-                    );
+                    // flush context.
+                    context = new RequestContextHolder(target, baseRequest, request, response);
+                    context.respond(400, new ExceptionResponse(ex));
                 } else {
                     throw ex;
                 }
-            } catch (Exception e) {
-                logger.error("Exception occurred", e);
+            } catch (Exception ex) {
+                logger.error("Exception occurred", ex);
                 if (errorHandling) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    baseRequest.setHandled(true);
+                    // flush context.
+                    context = new RequestContextHolder(target, baseRequest, request, response);
                     if (Environment.ENV != Environment.Type.PROD) {
-                        response.getWriter().println(
-                                mapper.writeValueAsString(new ExceptionResponse(e))
-                        );
+                        context.respond(500, new ExceptionResponse(ex));
                     } else {
-                        response.getWriter().println(
-                                mapper.writeValueAsString(SuccessResponse.fail())
-                        );
+                        context.respond(500, SuccessResponse.fail());
                     }
                 } else {
-                    throw e;
+                    throw ex;
                 }
             }
         }

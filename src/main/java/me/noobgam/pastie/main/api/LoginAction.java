@@ -1,6 +1,6 @@
 package me.noobgam.pastie.main.api;
 
-import me.noobgam.pastie.main.jetty.SuccessResponse;
+import me.noobgam.pastie.core.properties.PropertiesHolder;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
@@ -30,6 +30,8 @@ public class LoginAction implements AbstractHandler2 {
 
     private static final String BAD_PAIR = "Unrecognized handle/password pair";
 
+    private static final String COOKIE_DOMAIN = PropertiesHolder.getProperty("cookie.domain");
+
     @Autowired
     private UserDao userDao;
 
@@ -51,7 +53,7 @@ public class LoginAction implements AbstractHandler2 {
         //  even if he overrides prefix explicitly.
         // Password passed to this function should normally look like
         //  PREFIX + MD5(USER_INPUT)
-        String password = requestContext.getHeader("password");
+        String password = requestContext.getRequest().getReader().lines().findFirst().orElse(null);
         if (password == null || !password.startsWith(PASS_PREFIX)) {
             throw new IllegalArgumentException(PASSWORD_MISSING);
         }
@@ -73,7 +75,7 @@ public class LoginAction implements AbstractHandler2 {
         requestContext.addCookie(
                 generateCookie(userO.get().getId())
         );
-        requestContext.redirect("https://pastie.noobgam.me", SuccessResponse.success());
+        //requestContext.redirect("https://paste.noobgam.me", SuccessResponse.success());
 
         return requestContext;
     }
@@ -84,9 +86,8 @@ public class LoginAction implements AbstractHandler2 {
                 RandomUtils.generateSecureString()
         );
         cookie.setMaxAge(Integer.MAX_VALUE);
-        cookie.setDomain(".paste.noobgam.me");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setDomain(COOKIE_DOMAIN);
+        //cookie.setHttpOnly(true);
 
         cookieDao.storeCookie(objectId, cookie).join();
 

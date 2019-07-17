@@ -1,19 +1,24 @@
 package me.noobgam.pastie.main.api;
 
 import com.mongodb.async.client.MongoClient;
+import me.noobgam.pastie.core.properties.PropertiesHolder;
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
+import me.noobgam.pastie.main.users.cookies.CookieDao;
 import me.noobgam.pastie.main.users.security.UserPasswordDao;
 import me.noobgam.pastie.main.users.security.UserPasswordMongoDao;
 import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
 import me.noobgam.pastie.main.users.user.UserMongoDao;
 import me.noobgam.pastie.utils.MongoClientUtils;
+import me.noobgam.pastie.utils.RandomUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -31,11 +36,16 @@ public class RegisterAction implements AbstractHandler2 {
 
     private static final String ALREADY_TAKEN = "Handle already taken";
 
+    private static final String COOKIE_DOMAIN = PropertiesHolder.getProperty("cookie.domain");
+
     @Autowired
     private UserDao userDao;
 
     @Autowired
     private UserPasswordDao userPasswordDao;
+
+    @Autowired
+    private CookieDao cookieDao;
 
     @Autowired
     private MongoClient mongoClient;
@@ -58,7 +68,7 @@ public class RegisterAction implements AbstractHandler2 {
         //  even if he overrides prefix explicitly.
         // Password passed to this function should normally look like
         //  PREFIX + MD5(USER_INPUT)
-        String password = requestContext.getHeader("password");
+        String password = requestContext.getRequest().getReader().lines().findFirst().orElse(null);
         if (password == null || !password.startsWith(PASS_PREFIX)) {
             throw new IllegalArgumentException(PASSWORD_MISSING);
         }
@@ -83,7 +93,26 @@ public class RegisterAction implements AbstractHandler2 {
                     CompletableFuture.allOf(future1, future2).join();
                 }
         );
-
+        requestContext.addCookie(
+                generateCookie(newUserId)
+        );
+        requestContext.success(SuccessResponse.success());
         return requestContext;
+    }
+
+    private Cookie generateCookie(ObjectId objectId) {
+        Cookie cookie = new Cookie(
+                "SID",
+                RandomUtils.generateSecureString()
+        );
+        cookie.setMaxAge(Integer.MAX_VALUE);
+        if (COOKIE_DOMAIN != null) {
+            cookie.setDomain(COOKIE_DOMAIN);
+        }
+        //cookie.setHttpOnly(true);
+
+        cookieDao.storeCookie(objectId, cookie).join();
+
+        return cookie;
     }
 }

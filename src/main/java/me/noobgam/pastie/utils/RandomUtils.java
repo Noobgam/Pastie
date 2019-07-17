@@ -6,7 +6,7 @@ public final class RandomUtils {
     private RandomUtils() {
     }
 
-    private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789_%".toCharArray();
+    private static final char[] CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789".toCharArray();
 
     private static final int DEFAULT_LENGTH = 70;
 

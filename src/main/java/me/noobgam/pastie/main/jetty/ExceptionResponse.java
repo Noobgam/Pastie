@@ -7,4 +7,8 @@ public class ExceptionResponse extends RequestResponse {
         super(false);
         this.throwable = throwable;
     }
+
+    public String getError() {
+        return throwable.getMessage();
+    }
 }
