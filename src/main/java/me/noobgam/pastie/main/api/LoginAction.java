@@ -87,7 +87,7 @@ public class LoginAction implements AbstractHandler2 {
         );
         cookie.setMaxAge(Integer.MAX_VALUE);
         cookie.setDomain(COOKIE_DOMAIN);
-        //cookie.setHttpOnly(true);
+        cookie.setHttpOnly(true);
 
         cookieDao.storeCookie(objectId, cookie).join();
 

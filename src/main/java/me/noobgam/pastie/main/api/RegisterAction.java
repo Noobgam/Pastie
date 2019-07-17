@@ -106,10 +106,8 @@ public class RegisterAction implements AbstractHandler2 {
                 RandomUtils.generateSecureString()
         );
         cookie.setMaxAge(Integer.MAX_VALUE);
-        if (COOKIE_DOMAIN != null) {
-            cookie.setDomain(COOKIE_DOMAIN);
-        }
-        //cookie.setHttpOnly(true);
+        cookie.setDomain(COOKIE_DOMAIN);
+        cookie.setHttpOnly(true);
 
         cookieDao.storeCookie(objectId, cookie).join();
 
