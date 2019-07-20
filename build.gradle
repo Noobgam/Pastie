@@ -6,7 +6,7 @@ apply plugin: 'io.spring.dependency-management'
 group 'noobgam'
 version '0.1-BETA'
 
-sourceCompatibility = 1.12
+sourceCompatibility = 1.11
 
 buildscript {
     repositories {
@@ -14,6 +14,12 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE")
+    }
+}
+
+jar {
+    manifest {    
+        attributes 'MainClass': 'me.noobgam.pastie.main.core.Core'
     }
 }
 
@@ -42,5 +48,3 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
 }
-
-
