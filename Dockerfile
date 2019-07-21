@@ -8,5 +8,6 @@ RUN gradle build
 FROM openjdk:11-jre-slim
 EXPOSE 228
 COPY --from=builder /home/gradle/src/build/libs/pastie-me.noobgam.pastie.core.jar /app/
+COPY /srv/noobgam/pastie/secrets /srv/noobgam/pastie/secrets
 WORKDIR /app
 CMD java -jar pastie-me.noobgam.pastie.core.jar
