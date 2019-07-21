@@ -4,6 +4,10 @@ Minimalistic site made to share code snippets / small files.
 
 ## How to build image
 
+# First step
+
+You need to place secrets in the build folder by the path `./srv/noobgam/pastie/secrets`
+
 # Easy way:
 
 `sudo docker build --network=host -t pastie-backend -f docker/Dockerfile .`
