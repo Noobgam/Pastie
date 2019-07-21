@@ -4,7 +4,9 @@ import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
 import me.noobgam.pastie.main.jetty.PasteResponse;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
+import me.noobgam.pastie.main.jetty.helpers.Pipeline;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;
+import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.paste.Paste;
 import me.noobgam.pastie.main.paste.PasteDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @ActionContainer("/getpaste")
+@Pipeline(AuthAction.class)
 public class GetPasteAction implements AbstractHandler2 {
 
     @Autowired

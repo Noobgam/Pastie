@@ -1,9 +1,6 @@
 package me.noobgam.pastie.main.jetty.helpers.handlers;
 
-import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
-import me.noobgam.pastie.main.jetty.helpers.AuthenticatedRequestContextHolder;
-import me.noobgam.pastie.main.jetty.helpers.RequestContext;
-import me.noobgam.pastie.main.jetty.helpers.RequestContextHolder;
+import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.users.cookies.CookieDao;
 import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
@@ -17,8 +14,6 @@ public class AuthAction implements AbstractHandler2 {
 
     public static final String AUTH_HEADER = "SID";
 
-    public static final String COOKIE_DOMAIN = ".paste.noobgam.me";
-
     @Autowired
     private CookieDao cookieDao;
 
@@ -27,17 +22,19 @@ public class AuthAction implements AbstractHandler2 {
 
     @Override
     public RequestContext handle(RequestContext requestContext) throws IOException, ServletException {
-        if (!(requestContext instanceof RequestContextHolder)) {
+        if (requestContext instanceof AuthenticatedRequestContextHolder) {
             throw new RuntimeException("Multiple authentifications");
         }
         javax.servlet.http.Cookie cookie = requestContext.getCookie(AUTH_HEADER);
         if (!cookieIsGood(cookie)) {
+            CookieUtils.discardAuth(requestContext);
             return new AuthenticatedRequestContextHolder((RequestContextHolder) requestContext, User.DUMMY);
         }
         User user =
                 cookieDao.findByCookie(cookie.getValue()).join()
                         .flatMap(c -> userDao.findById(c.getUserId()).join())
                         .orElse(User.DUMMY);
+        CookieUtils.authenticateUserNewCookie(requestContext, user, cookieDao);
         return new AuthenticatedRequestContextHolder(
                 (RequestContextHolder) requestContext,
                 user

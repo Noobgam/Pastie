@@ -12,13 +12,11 @@ import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
 import me.noobgam.pastie.main.users.user.UserMongoDao;
 import me.noobgam.pastie.utils.MongoClientUtils;
-import me.noobgam.pastie.utils.RandomUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -94,23 +92,12 @@ public class RegisterAction implements AbstractHandler2 {
                 }
         );
         requestContext.addCookie(
-                generateCookie(newUserId)
+                CookieUtils.generateAuthCookie(newUserId, cookieDao)
+        );
+        requestContext.addCookie(
+                CookieUtils.generateUsernameCookie(handle)
         );
         requestContext.success(SuccessResponse.success());
         return requestContext;
-    }
-
-    private Cookie generateCookie(ObjectId objectId) {
-        Cookie cookie = new Cookie(
-                "SID",
-                RandomUtils.generateSecureString()
-        );
-        cookie.setMaxAge(Integer.MAX_VALUE);
-        cookie.setDomain(COOKIE_DOMAIN);
-        cookie.setHttpOnly(true);
-
-        cookieDao.storeCookie(objectId, cookie).join();
-
-        return cookie;
     }
 }
