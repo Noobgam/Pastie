@@ -36,7 +36,7 @@ public final class Environment {
             SYSTEM = OS.WIN;
         }
 
-        String env = System.getProperty("ENV");
+        String env = System.getenv("ENV");
         if ("PROD".equals(env)) {
             ENV = Type.PROD;
         } else if ("TEST".equals(env)) {
