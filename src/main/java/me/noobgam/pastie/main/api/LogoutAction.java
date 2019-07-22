@@ -1,5 +1,6 @@
 package me.noobgam.pastie.main.api;
 
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.users.cookies.CookieDao;
@@ -24,6 +25,7 @@ public class LogoutAction implements AbstractHandler2 {
             // we don't need to join future.
             cookieDao.deAuthUser(contextHolder.getUser().getId());
         }
+        requestContext.success(SuccessResponse.success());
         return requestContext;
     }
 }
