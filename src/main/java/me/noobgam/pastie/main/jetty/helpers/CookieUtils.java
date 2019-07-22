@@ -21,7 +21,6 @@ public final class CookieUtils {
         );
         DISCARD_AUTH.setMaxAge(0);
         DISCARD_AUTH.setDomain(COOKIE_DOMAIN);
-        DISCARD_AUTH.setHttpOnly(true);
         DISCARD_AUTH.setPath("/");
 
         DISCARD_SID = new Cookie(
@@ -30,6 +29,7 @@ public final class CookieUtils {
         );
         DISCARD_SID.setMaxAge(0);
         DISCARD_SID.setDomain(COOKIE_DOMAIN);
+        DISCARD_SID.setHttpOnly(true);
         DISCARD_SID.setPath("/");
     }
 
@@ -47,7 +47,7 @@ public final class CookieUtils {
             // can be null in case user is dummy.
             @Nullable CookieDao cookieDao
     ) {
-        if (user == User.DUMMY) {
+        if (user == User.DUMMY || cookieDao == null) {
             discardAuth(requestContext);
             return;
         }
@@ -65,7 +65,6 @@ public final class CookieUtils {
     public static boolean authCookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
         return cookie != null
                 && cookie.isHttpOnly()
-                && cookie.getSecure()
                 && cookie.getValue().length() == 70;
     }
 
@@ -96,7 +95,6 @@ public final class CookieUtils {
         );
         cookie.setMaxAge(Integer.MAX_VALUE);
         cookie.setDomain(COOKIE_DOMAIN);
-        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
