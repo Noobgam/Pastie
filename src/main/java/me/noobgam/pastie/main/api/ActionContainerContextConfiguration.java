@@ -29,6 +29,11 @@ public class ActionContainerContextConfiguration {
     }
 
     @Bean
+    public LogoutAction logoutAction() {
+        return new LogoutAction();
+    }
+
+    @Bean
     public PostPasteAction postPasteAction() {
         return new PostPasteAction();
     }

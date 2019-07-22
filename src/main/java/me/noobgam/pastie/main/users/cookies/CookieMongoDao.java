@@ -1,5 +1,7 @@
 package me.noobgam.pastie.main.users.cookies;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;
 import org.bson.types.ObjectId;
 
@@ -20,6 +22,11 @@ public class CookieMongoDao implements CookieDao {
     @Override
     public CompletableFuture<Optional<Cookie>> findByCookie(@Nonnull String cookie) {
         return collection.findById(cookie);
+    }
+
+    @Override
+    public CompletableFuture<DeleteResult> deAuthUser(ObjectId userId) {
+        return collection.deleteMany(Filters.eq("userId", userId));
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.noobgam.pastie.core.mongo.codec.ConventionAnnotationWrappingImpl;
 import org.bson.BsonDocument;
@@ -104,6 +105,19 @@ public class MongoAsyncCollectionX<TId, TEntity> {
     public CompletableFuture<Void> insertOne(TEntity entity) {
         SimpleFutureCallback<Void> callback = new SimpleFutureCallback<>();
         collection.insertOne(entity, callback);
+        return callback.getFuture();
+    }
+
+    /**
+     * Insert one document transformed from entity
+     *
+     * @param filter filter
+     * @return {@link CompletableFuture<DeleteResult>} future
+     */
+    @CheckReturnValue
+    public CompletableFuture<DeleteResult> deleteMany(Bson filter) {
+        SimpleFutureCallback<DeleteResult> callback = new SimpleFutureCallback<>();
+        collection.deleteMany(filter, callback);
         return callback.getFuture();
     }
 

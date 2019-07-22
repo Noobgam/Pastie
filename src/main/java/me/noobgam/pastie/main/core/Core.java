@@ -64,6 +64,7 @@ public class Core extends MainSupport {
                 collectHandlers(
                         PostPasteAction.class,
                         LoginAction.class,
+                        LogoutAction.class,
                         PingAction.class,
                         RegisterAction.class,
                         GetPasteAction.class
