@@ -1,6 +1,5 @@
 package me.noobgam.pastie.main.users.cookies;
 
-import com.mongodb.client.model.Filters;
 import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;
 import org.bson.types.ObjectId;
 
@@ -12,15 +11,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class CookieMongoDao implements CookieDao {
 
-    private final MongoAsyncCollectionX<ObjectId, Cookie> collection;
+    private final MongoAsyncCollectionX<String, Cookie> collection;
 
-    public CookieMongoDao(MongoAsyncCollectionX<ObjectId, Cookie> collection) {
+    public CookieMongoDao(MongoAsyncCollectionX<String, Cookie> collection) {
         this.collection = collection;
     }
 
     @Override
     public CompletableFuture<Optional<Cookie>> findByCookie(@Nonnull String cookie) {
-        return collection.findOneByFilter(Filters.eq(""));
+        return collection.findById(cookie);
     }
 
     @Override
