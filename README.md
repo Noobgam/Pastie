@@ -10,7 +10,7 @@ You need to place secrets in the build folder by the path `./srv/noobgam/pastie/
 
 ## Easy way:
 
-`sudo docker build --network=host -t pastie-backend -f docker/Dockerfile .`
+`sudo docker build --network=host -t pastie-backend -f docker/Dockerfile-raw .`
 
 This is ultra-slow, gradle warmup is really bad, requires only docker installed.
 
