@@ -62,18 +62,16 @@ public final class CookieUtils {
         );
     }
 
+    public static boolean authCookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
+        return cookie != null
+                && cookie.isHttpOnly()
+                && cookie.getSecure()
+                && cookie.getValue().length() == 70;
+    }
+
     public static Cookie generateAuthCookie(ObjectId objectId, CookieDao cookieDao) {
-        Cookie cookie = new Cookie(
-                "SID",
-                RandomUtils.generateSecureString()
-        );
-        cookie.setMaxAge(Integer.MAX_VALUE);
-        cookie.setDomain(COOKIE_DOMAIN);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
+        Cookie cookie = createAuthCookie();
         cookieDao.storeCookie(objectId, cookie).join();
-
         return cookie;
     }
 
@@ -88,6 +86,19 @@ public final class CookieUtils {
         cookie.setPath("/");
 
         cookie.setHttpOnly(false);
+        return cookie;
+    }
+
+    static Cookie createAuthCookie() {
+        Cookie cookie = new Cookie(
+                "SID",
+                RandomUtils.generateSecureString()
+        );
+        cookie.setMaxAge(Integer.MAX_VALUE);
+        cookie.setDomain(COOKIE_DOMAIN);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         return cookie;
     }
 }

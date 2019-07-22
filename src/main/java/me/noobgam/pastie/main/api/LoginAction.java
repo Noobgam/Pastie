@@ -1,5 +1,6 @@
 package me.noobgam.pastie.main.api;
 
+import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.users.cookies.CookieDao;
 import me.noobgam.pastie.main.users.security.UserPasswordDao;
@@ -73,7 +74,7 @@ public class LoginAction implements AbstractHandler2 {
                 user,
                 cookieDao
         );
-        //requestContext.redirect("https://paste.noobgam.me", SuccessResponse.success());
+        requestContext.success(SuccessResponse.success());
         return new AuthenticatedRequestContextHolder(
                 (RequestContextHolder) requestContext,
                 user

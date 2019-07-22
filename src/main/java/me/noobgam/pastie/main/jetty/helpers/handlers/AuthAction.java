@@ -6,7 +6,6 @@ import me.noobgam.pastie.main.users.user.User;
 import me.noobgam.pastie.main.users.user.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
@@ -26,7 +25,7 @@ public class AuthAction implements AbstractHandler2 {
             throw new RuntimeException("Multiple authentifications");
         }
         javax.servlet.http.Cookie cookie = requestContext.getCookie(AUTH_HEADER);
-        if (!cookieIsGood(cookie)) {
+        if (!CookieUtils.authCookieIsGood(cookie)) {
             CookieUtils.discardAuth(requestContext);
             return new AuthenticatedRequestContextHolder((RequestContextHolder) requestContext, User.DUMMY);
         }
@@ -39,12 +38,5 @@ public class AuthAction implements AbstractHandler2 {
                 (RequestContextHolder) requestContext,
                 user
         );
-    }
-
-    private static boolean cookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
-        return cookie != null
-                && cookie.isHttpOnly()
-                && cookie.getSecure()
-                && cookie.getValue().length() == 70;
     }
 }
