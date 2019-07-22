@@ -15,7 +15,7 @@ public class CookieUtilsTest {
         Assert.assertTrue(authCookieIsGood(cookie));
 
         cookie.setHttpOnly(false);
-        Assert.assertFalse(authCookieIsGood(cookie));
+        Assert.assertTrue(authCookieIsGood(cookie));
         cookie.setHttpOnly(true);
         Assert.assertTrue(authCookieIsGood(cookie));
 

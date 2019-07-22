@@ -64,7 +64,6 @@ public final class CookieUtils {
 
     public static boolean authCookieIsGood(@Nullable javax.servlet.http.Cookie cookie) {
         return cookie != null
-                && cookie.isHttpOnly()
                 && cookie.getValue().length() == 70;
     }
 
