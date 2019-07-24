@@ -42,9 +42,11 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.0'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
     compile("org.springframework.boot:spring-boot-starter-web")
 
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
+    compile 'io.prometheus:simpleclient:0.6.0'
+    compile 'io.prometheus:simpleclient_httpserver:0.6.0'
 }

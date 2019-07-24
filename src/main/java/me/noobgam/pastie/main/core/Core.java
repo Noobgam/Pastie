@@ -1,7 +1,9 @@
 package me.noobgam.pastie.main.core;
 
+import io.prometheus.client.exporter.HTTPServer;
 import me.noobgam.pastie.core.properties.PropertiesHolder;
 import me.noobgam.pastie.main.api.*;
+import me.noobgam.pastie.main.background.SchedulerContextConfiguration;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.Pipeline;
@@ -14,6 +16,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 public class Core extends MainSupport {
@@ -32,9 +35,12 @@ public class Core extends MainSupport {
         return Stream.concat(Stream.of(classes), Stream.of(clazz)).toArray(Class<?>[]::new);
     }
 
-    private ContextHandlerCollection collectHandlers(Class<?>... classes) {
+    private ContextHandlerCollection collectHandlers(
+            Collection<Class<?>> classes,
+            ContextHandler... extraHandlers
+    ) {
         return new ContextHandlerCollection(
-                Arrays.stream(classes).map(clazz -> {
+                Stream.concat(classes.stream().map(clazz -> {
                     ActionContainer containerAnnotation =
                             clazz.getAnnotation(ActionContainer.class);
                     Pipeline pipelineAnnotation = clazz.getAnnotation(Pipeline.class);
@@ -51,7 +57,7 @@ public class Core extends MainSupport {
                                     .toArray(AbstractHandler2[]::new)
                     ));
                     return contextHandler;
-                }).toArray(ContextHandler[]::new)
+                }), Arrays.stream(extraHandlers)).toArray(ContextHandler[]::new)
         );
     }
 
@@ -62,18 +68,24 @@ public class Core extends MainSupport {
         );
         server.setHandler(
                 collectHandlers(
-                        PostPasteAction.class,
-                        LoginAction.class,
-                        LogoutAction.class,
-                        PingAction.class,
-                        RegisterAction.class,
-                        GetPasteAction.class
+                        Arrays.asList(
+                                PostPasteAction.class,
+                                LoginAction.class,
+                                LogoutAction.class,
+                                PingAction.class,
+                                RegisterAction.class,
+                                GetPasteAction.class
+                        )
                 )
         );
+        final HTTPServer httpServer;
         try {
             server.start();
+            httpServer = new HTTPServer(
+                    PropertiesHolder.getIntProperty("prometheus.port")
+            );
         } catch (Exception e) {
-            logger.fatal("Jetty failed to start", e);
+            logger.fatal("Http server failed to start", e);
             return;
         }
         try {
@@ -86,7 +98,8 @@ public class Core extends MainSupport {
     @Override
     public Class<?>[] getApplicationContexts() {
         return new Class<?>[]{
-                ActionContainerContextConfiguration.class
+                ActionContainerContextConfiguration.class,
+                SchedulerContextConfiguration.class
         };
     }
 }
