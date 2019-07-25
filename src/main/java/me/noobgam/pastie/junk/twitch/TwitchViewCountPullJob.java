@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,6 +44,8 @@ public class TwitchViewCountPullJob extends Job {
             .help("Active viewer count.")
             .labelNames("user_login").register();
 
+    private volatile HashSet<String> userNameCache = new HashSet<>();
+
     @Override
     protected Duration delay() {
         return delay;
@@ -58,11 +61,14 @@ public class TwitchViewCountPullJob extends Job {
                     = response.getData().stream().collect(
                     Collectors.toMap(pojo -> pojo.getUserName(), pojo -> pojo.getViewerCount())
             );
-            for (String streamer : watchedStreams) {
+            HashSet<String> temp = new HashSet<>(userNameCache);
+            temp.addAll(viewersByName.keySet());
+            temp.forEach(streamer ->
                 VIEWERS_COUNT_SUMMARY
                         .labels(streamer)
-                        .set(viewersByName.getOrDefault(streamer, 0));
-            }
+                        .set(viewersByName.getOrDefault(streamer, 0))
+            );
+            userNameCache = temp;
         } catch (Exception ex) {
             logger.error(ex);
         }
