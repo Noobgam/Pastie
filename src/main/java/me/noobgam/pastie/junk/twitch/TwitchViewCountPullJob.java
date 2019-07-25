@@ -13,7 +13,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TwitchViewCountPullJob extends Job {
 
@@ -49,12 +51,17 @@ public class TwitchViewCountPullJob extends Job {
     @Override
     protected void run() {
         try {
+
             HttpResponse<String> httpResponse = httpClient.send(prepareRequest(), HttpResponse.BodyHandlers.ofString());
             StreamMetadataResponse response = MAPPER.readValue(httpResponse.body(), StreamMetadataResponse.class);
-            for (StreamMetadataPojo streamMetadataPojo : response.getData()) {
+            Map<String, Integer> viewersByName
+                    = response.getData().stream().collect(
+                    Collectors.toMap(pojo -> pojo.getUserName(), pojo -> pojo.getViewerCount())
+            );
+            for (String streamer : watchedStreams) {
                 VIEWERS_COUNT_SUMMARY
-                        .labels(streamMetadataPojo.getUserName())
-                        .set(streamMetadataPojo.getViewerCount());
+                        .labels(streamer)
+                        .set(viewersByName.getOrDefault(streamer, 0));
             }
         } catch (Exception ex) {
             logger.error(ex);
