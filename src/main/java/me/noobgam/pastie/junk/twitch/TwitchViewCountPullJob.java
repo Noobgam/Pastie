@@ -19,7 +19,12 @@ public class TwitchViewCountPullJob extends Job {
 
     private static final Logger logger = LogManager.getLogger(TwitchViewCountPullJob.class);
 
-    private static final Set<String> watchedStreams = Cu.set("redbull", "jsooonix");
+    private static final Set<String> watchedStreams = Cu.set(
+            "redbull",
+            "jsooonix",
+            "riotgames",
+            "loltyler1"
+    );
 
     private static final URI uri =
             URI.create("https://api.twitch.tv/helix/streams" +
