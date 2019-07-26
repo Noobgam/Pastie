@@ -1,16 +1,15 @@
 package me.noobgam.pastie.main.background;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,34 +19,47 @@ public class Scheduler {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(30);
 
-    @Autowired
-    private List<Job> jobs;
+    private final List<Job> jobs;
 
-    private Long2ObjectRBTreeMap<Job> scheduledJobs = new Long2ObjectRBTreeMap<>();
+    public Scheduler(List<Job> jobs) {
+        this.jobs = jobs;
+    }
+
+    private ObjectRBTreeSet<ScheduledJob> scheduledJobs = new ObjectRBTreeSet<>();
 
     private final Lock lock = new ReentrantLock();
-    private final Condition notEmpty = lock.newCondition();
 
     private final Thread runThread = new Thread(this::run);
 
+    private volatile boolean running = false;
+
     /**
-     * @return time to sleep (ms)
+     * @return first job, blocks until job is found.
      * @throws InterruptedException
      */
-    private long sleepBeforeJob() {
-        final long firstTs;
+    private ScheduledJob getJob() throws InterruptedException {
         synchronized (lock) {
-            if (scheduledJobs.isEmpty()) {
-                return 1000;
+            while (scheduledJobs.isEmpty()) {
+                lock.wait();
             }
-            firstTs = scheduledJobs.firstLongKey();
+            return scheduledJobs.first();
         }
-        long now = Instant.now().toEpochMilli();
-        long timeToSleep = Math.min(500L, firstTs - now);
-        if (timeToSleep > 0) {
-            return (timeToSleep + 1) / 2;
+    }
+
+    /**
+     * @return popped job, blocks until one is found.
+     * @throws InterruptedException
+     */
+    private ScheduledJob popJob() throws InterruptedException {
+        final ScheduledJob job;
+        synchronized (lock) {
+            while (scheduledJobs.isEmpty()) {
+                lock.wait();
+            }
+            job = scheduledJobs.first();
+            scheduledJobs.remove(job);
         }
-        return 0;
+        return job;
     }
 
     private void run() {
@@ -55,19 +67,24 @@ public class Scheduler {
             addJob(job);
         }
         // while not interrupted.
+        running = true;
         while (true) {
             try {
-                long sleep = sleepBeforeJob();
-                if (sleep > 0) {
-                    Thread.sleep(sleep);
+                ScheduledJob job = getJob();
+                Instant now = Instant.now();
+                if (now.isBefore(job.getScheduleTime())) {
+                    long sleepMs =
+                            Math.min(
+                                    500L,
+                                    Duration.between(
+                                            now,
+                                            job.getScheduleTime()
+                                    ).toMillis()
+                            );
+                    Thread.sleep(sleepMs);
                     continue;
                 }
-                final Job jobToExecute;
-                synchronized (lock) {
-                    long key = scheduledJobs.firstLongKey();
-                    jobToExecute = scheduledJobs.get(key);
-                    scheduledJobs.remove(key);
-                }
+                final Job jobToExecute = popJob().getJob();
                 executor.execute(() -> runJob(jobToExecute));
             } catch (InterruptedException ex) {
                 logger.warn("Scheduler was interrupted, finalizing", ex);
@@ -82,16 +99,10 @@ public class Scheduler {
     }
 
     public void addJob(Job job) {
-        // while true to make sure you don't override jobs.
-        while (true) {
-            synchronized (lock) {
-                long now = Instant.now().toEpochMilli();
-                long ts = now + job.delay().toMillis();
-                if (scheduledJobs.get(ts) == null) {
-                    scheduledJobs.put(ts, job);
-                    return;
-                }
-            }
+        synchronized (lock) {
+            Instant ts = Instant.now().plus(job.delay());
+            scheduledJobs.add(new ScheduledJob(job, ts));
+            lock.notify();
         }
     }
 
@@ -103,5 +114,10 @@ public class Scheduler {
     public void stop() {
         executor.shutdown();
         runThread.interrupt();
+        running = false;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

@@ -5,11 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import java.util.List;
+
 @Configuration
 @Import(JunkContextConfiguration.class)
 public class SchedulerContextConfiguration {
     @Bean
-    public Scheduler scheduler() {
-        return new Scheduler();
+    public Scheduler scheduler(List<Job> jobs) {
+        return new Scheduler(jobs);
     }
 }
