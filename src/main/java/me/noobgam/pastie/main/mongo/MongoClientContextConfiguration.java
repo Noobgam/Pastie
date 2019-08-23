@@ -1,7 +1,9 @@
 package me.noobgam.pastie.main.mongo;
 
 import com.mongodb.MongoCredential;
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.async.client.MongoClients;
@@ -34,6 +36,8 @@ public class MongoClientContextConfiguration {
                 MongoClientSettings.builder()
                         .credential(credential)
                         .clusterSettings(clusterSettings)
+                        .readPreference(ReadPreference.nearest())
+                        .writeConcern(WriteConcern.W1)
                         .build()
         );
     }
