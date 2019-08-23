@@ -32,6 +32,8 @@ public interface RequestContext {
 
     void respond(Integer status, RequestResponse result);
 
+    void respondPlainText(Integer status, String response);
+
     void redirect(String path, RequestResponse result);
 
     boolean isHandled();

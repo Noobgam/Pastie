@@ -47,7 +47,15 @@ public class GetPasteAction implements AbstractHandler2 {
             );
             return requestContext;
         }
-        requestContext.success(new PasteResponse(pasteO.get()));
+        boolean raw =
+                Optional.ofNullable(requestContext.getUrlParams().get("raw"))
+                        .map(Boolean::valueOf)
+                        .orElse(false);
+        if (!raw) {
+            requestContext.success(new PasteResponse(pasteO.get()));
+        } else {
+            requestContext.respondPlainText(200, pasteO.get().getContent());
+        }
         return requestContext;
     }
 }

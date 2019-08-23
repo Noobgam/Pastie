@@ -76,6 +76,11 @@ public class AuthenticatedRequestContextHolder implements RequestContext {
     }
 
     @Override
+    public void respondPlainText(Integer status, String response) {
+        holder.respondPlainText(status, response);
+    }
+
+    @Override
     public void redirect(String path, RequestResponse result) {
         holder.redirect(path, result);
     }
