@@ -1,6 +1,8 @@
 # Pastie
 
-Minimalistic site made to share code snippets / small files.
+Minimalistic [site](https://paste.noobgam.me/) made to share code snippets / small files.
+
+Frontend link: https://github.com/Noobgam/Pastie-frontend
 
 # How to build image
 
