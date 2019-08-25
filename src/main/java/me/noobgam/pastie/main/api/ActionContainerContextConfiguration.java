@@ -3,6 +3,7 @@ package me.noobgam.pastie.main.api;
 import me.noobgam.pastie.main.core.ReadinessChecker;
 import me.noobgam.pastie.main.core.ReadinessCheckerContextConfiguration;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuxiliaryHandlersContextConfiguration;
+import me.noobgam.pastie.main.paste.PasteCacheContextConfiguration;
 import me.noobgam.pastie.main.paste.PasteDaoContextConfiguration;
 import me.noobgam.pastie.main.users.cookies.CookieDaoContextConfiguration;
 import me.noobgam.pastie.main.users.security.UserPasswordDaoContextConfiguration;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Import;
         CookieDaoContextConfiguration.class,
         ReadinessCheckerContextConfiguration.class,
         UserPasswordDaoContextConfiguration.class,
+        PasteCacheContextConfiguration.class,
 
         AuxiliaryHandlersContextConfiguration.class
 })

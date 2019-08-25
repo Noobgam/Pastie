@@ -56,7 +56,7 @@ public class SchedulerTest {
                     new TestJob(Duration.ofMillis(TEST_DELAY * TEST_SIZE + i), TEST_SIZE + i, queue)
             );
         }
-        Scheduler scheduler = new Scheduler(jobs);
+        Scheduler scheduler = new SimpleMultiThreadScheduler(jobs);
         scheduler.start();
 
         for (Integer i = 1; i < 10; ++i) {

@@ -1,6 +1,5 @@
 package me.noobgam.pastie.main.mongo;
 
-import com.mongodb.ReadPreference;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
 import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;
@@ -17,8 +16,7 @@ public final class MongoUtils {
             Class<TEntity> clazz
     ) {
         MongoCollection<TEntity> coll =
-                client.getDatabase(database).getCollection(collection, clazz)
-                        .withReadPreference(ReadPreference.primaryPreferred());
+                client.getDatabase(database).getCollection(collection, clazz);
         return new MongoAsyncCollectionX<>(
                 coll, clazz
         );

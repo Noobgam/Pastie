@@ -12,6 +12,6 @@ import java.util.List;
 public class SchedulerContextConfiguration {
     @Bean
     public Scheduler scheduler(List<Job> jobs) {
-        return new Scheduler(jobs);
+        return new SimpleMultiThreadScheduler(jobs);
     }
 }

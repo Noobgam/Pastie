@@ -5,6 +5,10 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import javax.annotation.Nullable;
 
 public class Paste {
+
+    public static final Paste DUMMY =
+            new Paste(null, null, null, null);
+
     @BsonId
     private String id;
 
