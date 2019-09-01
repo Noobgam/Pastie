@@ -1,6 +1,6 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
-import me.noobgam.pastie.main.jetty.RequestResponse;
+import me.noobgam.pastie.main.jetty.dto.RequestResponse;
 import me.noobgam.pastie.main.users.user.User;
 import org.eclipse.jetty.server.Request;
 

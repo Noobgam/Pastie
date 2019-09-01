@@ -1,7 +1,7 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.noobgam.pastie.main.jetty.RequestResponse;
+import me.noobgam.pastie.main.jetty.dto.RequestResponse;
 import org.eclipse.jetty.server.Request;
 
 import javax.annotation.Nullable;

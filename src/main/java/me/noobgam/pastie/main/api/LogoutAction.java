@@ -1,6 +1,6 @@
 package me.noobgam.pastie.main.api;
 
-import me.noobgam.pastie.main.jetty.SuccessResponse;
+import me.noobgam.pastie.main.jetty.dto.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.users.cookies.CookieDao;

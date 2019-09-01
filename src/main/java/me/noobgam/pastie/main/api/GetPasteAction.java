@@ -1,7 +1,7 @@
 package me.noobgam.pastie.main.api;
 
-import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
-import me.noobgam.pastie.main.jetty.PasteResponse;
+import me.noobgam.pastie.main.jetty.dto.InvalidQueryResponse;
+import me.noobgam.pastie.main.jetty.dto.PasteResponse;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.Pipeline;

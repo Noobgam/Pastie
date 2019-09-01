@@ -1,6 +1,6 @@
 package me.noobgam.pastie.main.api;
 
-import me.noobgam.pastie.main.jetty.SuccessResponse;
+import me.noobgam.pastie.main.jetty.dto.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.AbstractHandler2;
 import me.noobgam.pastie.main.jetty.helpers.ActionContainer;
 import me.noobgam.pastie.main.jetty.helpers.RequestContext;

@@ -1,4 +1,4 @@
-package me.noobgam.pastie.main.jetty;
+package me.noobgam.pastie.main.jetty.dto;
 
 public class PostPasteResponse extends RequestResponse {
     private final String pasteId;

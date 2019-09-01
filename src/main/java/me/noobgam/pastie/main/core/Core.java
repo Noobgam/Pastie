@@ -74,7 +74,8 @@ public class Core extends MainSupport {
                                 LogoutAction.class,
                                 PingAction.class,
                                 RegisterAction.class,
-                                GetPasteAction.class
+                                GetPasteAction.class,
+                                RecentAction.class
                         )
                 )
         );

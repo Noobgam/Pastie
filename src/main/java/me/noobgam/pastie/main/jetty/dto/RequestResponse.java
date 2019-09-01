@@ -1,6 +1,7 @@
-package me.noobgam.pastie.main.jetty;
+package me.noobgam.pastie.main.jetty.dto;
 
 import me.noobgam.pastie.core.env.Environment;
+import me.noobgam.pastie.main.jetty.Utils;
 
 public class RequestResponse {
     private final String host;

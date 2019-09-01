@@ -2,7 +2,7 @@ package me.noobgam.pastie.main.api;
 
 import com.mongodb.async.client.MongoClient;
 import me.noobgam.pastie.core.properties.PropertiesHolder;
-import me.noobgam.pastie.main.jetty.SuccessResponse;
+import me.noobgam.pastie.main.jetty.dto.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.users.cookies.CookieDao;

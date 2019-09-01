@@ -30,6 +30,10 @@ public abstract class AbstractCachedSomething<T> {
         return Optional.ofNullable(value);
     }
 
+    public Optional<T> cachedOrCurrent() {
+        return getCached().or(this::calculateCurrent);
+    }
+
     public abstract Optional<T> calculateCurrent();
 
     public abstract Duration defaultDelay();

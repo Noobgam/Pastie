@@ -3,6 +3,7 @@ package me.noobgam.pastie.main.api;
 import me.noobgam.pastie.main.core.ReadinessChecker;
 import me.noobgam.pastie.main.core.ReadinessCheckerContextConfiguration;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuxiliaryHandlersContextConfiguration;
+import me.noobgam.pastie.main.paste.PasteCache;
 import me.noobgam.pastie.main.paste.PasteCacheContextConfiguration;
 import me.noobgam.pastie.main.paste.PasteDaoContextConfiguration;
 import me.noobgam.pastie.main.users.cookies.CookieDaoContextConfiguration;
@@ -38,6 +39,11 @@ public class ActionContainerContextConfiguration {
     @Bean
     public PostPasteAction postPasteAction() {
         return new PostPasteAction();
+    }
+
+    @Bean
+    public RecentAction recentAction(PasteCache pasteCache) {
+        return new RecentAction(pasteCache);
     }
 
     @Bean

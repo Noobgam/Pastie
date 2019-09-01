@@ -1,10 +1,9 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.prometheus.client.Histogram;
 import me.noobgam.pastie.core.env.Environment;
-import me.noobgam.pastie.main.jetty.ExceptionResponse;
-import me.noobgam.pastie.main.jetty.SuccessResponse;
+import me.noobgam.pastie.main.jetty.dto.ExceptionResponse;
+import me.noobgam.pastie.main.jetty.dto.SuccessResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Request;
@@ -19,10 +18,10 @@ public class PipelineHandler extends AbstractHandler {
 
     private static final Logger logger = LogManager.getLogger(PipelineHandler.class);
 
-    static final Histogram requestLatency = Histogram.build()
-            .name("requests_latency_seconds").help("Request latency in seconds.").register();
-
-    protected static final ObjectMapper mapper = new ObjectMapper();
+    private static final Histogram REQUEST_LATENCY = Histogram.build()
+            .name("requests_latency_seconds")
+            .help("Request latency in seconds.")
+            .register();
 
     private AbstractHandler2[] handlerPipeline;
     private final boolean errorHandling;
@@ -38,7 +37,7 @@ public class PipelineHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Histogram.Timer requestTimer = requestLatency.startTimer();
+        Histogram.Timer requestTimer = REQUEST_LATENCY.startTimer();
         try {
             RequestContext context = new RequestContextHolder(target, baseRequest, request, response);
             for (AbstractHandler2 handler : handlerPipeline) {

@@ -1,5 +1,6 @@
 package me.noobgam.pastie.main.paste;
 
+import com.mongodb.client.model.Filters;
 import me.noobgam.pastie.core.mongo.MongoAsyncCollectionX;
 
 import java.util.List;
@@ -22,6 +23,11 @@ public class PasteMongoDao implements PasteDao {
     @Override
     public CompletableFuture<Optional<Paste>> findById(String id) {
         return collection.findById(id);
+    }
+
+    @Override
+    public CompletableFuture<List<Paste>> findByHandle(String handle) {
+        return collection.find(Filters.eq("owner", handle));
     }
 
     @Override

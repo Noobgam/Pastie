@@ -1,10 +1,9 @@
 package me.noobgam.pastie.main.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import me.noobgam.pastie.main.jetty.InvalidQueryResponse;
-import me.noobgam.pastie.main.jetty.PostPasteResponse;
-import me.noobgam.pastie.main.jetty.SuccessResponse;
 import me.noobgam.pastie.main.jetty.Utils;
+import me.noobgam.pastie.main.jetty.dto.InvalidQueryResponse;
+import me.noobgam.pastie.main.jetty.dto.PostPasteResponse;
+import me.noobgam.pastie.main.jetty.dto.SuccessResponse;
 import me.noobgam.pastie.main.jetty.helpers.*;
 import me.noobgam.pastie.main.jetty.helpers.handlers.AuthAction;
 import me.noobgam.pastie.main.paste.Paste;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 @ActionContainer("/paste")
 @Pipeline(AuthAction.class)
 public class PostPasteAction implements AbstractHandler2 {
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private PasteDao pasteDao;
@@ -41,7 +38,7 @@ public class PostPasteAction implements AbstractHandler2 {
             return requestContext;
         }
         AuthenticatedRequestContextHolder contextHolder = (AuthenticatedRequestContextHolder) requestContext;
-        Paste paste = new Paste(
+        Paste paste = Paste.cons(
                 Utils.getRandomAlNum(6),
                 contextHolder.getUser().getUsername(),
                 requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n")),

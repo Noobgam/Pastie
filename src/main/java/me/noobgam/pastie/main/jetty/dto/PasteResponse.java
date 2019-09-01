@@ -1,9 +1,10 @@
-package me.noobgam.pastie.main.jetty;
+package me.noobgam.pastie.main.jetty.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import me.noobgam.pastie.main.paste.Paste;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PasteResponse extends RequestResponse {
@@ -26,5 +27,13 @@ public class PasteResponse extends RequestResponse {
     @Nullable
     public String getLang() {
         return paste.getLanguage();
+    }
+
+    @Nullable
+    public Long getInstant() {
+        Instant instant = paste.getInstant();
+        return instant != null
+                ? instant.getEpochSecond()
+                : null;
     }
 }
