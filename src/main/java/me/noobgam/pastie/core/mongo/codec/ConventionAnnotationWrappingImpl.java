@@ -1,25 +1,17 @@
 package me.noobgam.pastie.core.mongo.codec;
 
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.bson.codecs.configuration.CodecConfigurationException;
 import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.PropertyModelBuilder;
-import org.bson.codecs.pojo.annotations.BsonCreator;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.codecs.pojo.annotations.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 import static java.lang.reflect.Modifier.isPublic;
 
@@ -89,11 +81,14 @@ public final class ConventionAnnotationWrappingImpl implements Convention {
         Class<T> clazz = classModelBuilder.getType();
         WrappingCreatorExecutable<T> wrappingCreatorExecutable = null;
         for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-            if (isPublic(constructor.getModifiers()) && !constructor.isSynthetic()) {
+            if (!constructor.isSynthetic()) {
                 for (Annotation annotation : constructor.getDeclaredAnnotations()) {
                     if (annotation.annotationType().equals(BsonCreator.class)) {
                         if (wrappingCreatorExecutable != null) {
                             throw new CodecConfigurationException("Found multiple constructors annotated with @BsonCreator");
+                        }
+                        if (!isPublic(constructor.getModifiers())) {
+                            constructor.setAccessible(true);
                         }
                         wrappingCreatorExecutable = new WrappingCreatorExecutable<T>(
                                 clazz,
@@ -124,11 +119,14 @@ public final class ConventionAnnotationWrappingImpl implements Convention {
         }
 
         if (wrappingCreatorExecutable != null) {
-            if (wrappingCreatorExecutable.getIdPropertyIndex() == -1) {
-                // Do not allow such POJOs here, because otherwise the only way to detect problem is
-                //  during object encoding (insertion to DB)
-                throw new IllegalArgumentException(String.format("Could not find id field for class %s.", clazz));
-            }
+//            The code below is incorrect, Mongo driver passes all pojos to the convention
+//            Thus the code below won't work in case nested pojo does not contain @BsonId
+//
+//            if (wrappingCreatorExecutable.getIdPropertyIndex() == -1) {
+//                // Do not allow such POJOs here, because otherwise the only way to detect problem is
+//                //  during object encoding (insertion to DB)
+//                throw new IllegalArgumentException(String.format("Could not find id field for class %s.", clazz));
+//            }
             classModelBuilder.instanceCreatorFactory(new WrappingInstanceCreatorFactoryImpl<>(wrappingCreatorExecutable));
             cleanPropertyBuilders(classModelBuilder);
         }
