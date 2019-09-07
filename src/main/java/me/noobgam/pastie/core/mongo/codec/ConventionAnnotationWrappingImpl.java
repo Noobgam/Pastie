@@ -90,7 +90,7 @@ public final class ConventionAnnotationWrappingImpl implements Convention {
                         if (!isPublic(constructor.getModifiers())) {
                             constructor.setAccessible(true);
                         }
-                        wrappingCreatorExecutable = new WrappingCreatorExecutable<T>(
+                        wrappingCreatorExecutable = new WrappingCreatorExecutable<>(
                                 clazz,
                                 (Constructor<T>) constructor,
                                 classModelBuilder

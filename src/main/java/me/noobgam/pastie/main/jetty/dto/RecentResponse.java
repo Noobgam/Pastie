@@ -6,18 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecentResponse extends RequestResponse {
-    private List<PasteResponse> pastes;
+    private List<RecentPaste> pastes;
 
     public RecentResponse(List<Paste> pastes) {
         super(true);
-        ArrayList<PasteResponse> pasteResponses = new ArrayList<>(pastes.size());
+
+        // jackson is bad. java.lang is not any better.
+        // I'm not using iterable here, neither I'm going to pass stream to constructor.
+        ArrayList<RecentPaste> pasteResponses = new ArrayList<>(pastes.size());
         for (Paste paste : pastes) {
-            pasteResponses.add(new PasteResponse(paste));
+            pasteResponses.add(new RecentPaste(paste));
         }
         this.pastes = pasteResponses;
     }
 
-    public List<PasteResponse> getPastes() {
+    public List<RecentPaste> getPastes() {
         return pastes;
     }
 }

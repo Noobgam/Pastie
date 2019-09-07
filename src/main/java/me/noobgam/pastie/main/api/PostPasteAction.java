@@ -37,11 +37,19 @@ public class PostPasteAction implements AbstractHandler2 {
             );
             return requestContext;
         }
+        String content = requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n"));
+        if (content.isBlank()) {
+            requestContext.respond(
+                    400,
+                    new InvalidQueryResponse("Empty content is not allowed")
+            );
+            return requestContext;
+        }
         AuthenticatedRequestContextHolder contextHolder = (AuthenticatedRequestContextHolder) requestContext;
         Paste paste = Paste.cons(
                 Utils.getRandomAlNum(6),
                 contextHolder.getUser().getUsername(),
-                requestContext.getRequest().getReader().lines().collect(Collectors.joining("\n")),
+                content,
                 requestContext.getHeader("X-Paste-Lang")
         );
         pasteDao.insertOne(paste).join();

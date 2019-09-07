@@ -8,8 +8,6 @@ import javax.annotation.Nullable;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -23,7 +21,7 @@ public class RequestContextHolder implements RequestContext {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
 
-    private final Instant start;
+    private final long startMs;
 
     public RequestContextHolder(
             String target,
@@ -31,7 +29,7 @@ public class RequestContextHolder implements RequestContext {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        start = Instant.now();
+        startMs = System.currentTimeMillis();
 
         this.target = target;
         this.baseRequest = baseRequest;
@@ -99,7 +97,7 @@ public class RequestContextHolder implements RequestContext {
         try {
             response.setContentType("application/json");
             fillHeaders(status, response);
-            result.setHandleMs(Duration.between(start, Instant.now()).toMillis());
+            result.setHandleMs(System.currentTimeMillis() - startMs);
             result.setStatus(status);
             response.setStatus(status);
             response.getWriter().println(mapper.writeValueAsString(result));

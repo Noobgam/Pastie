@@ -10,7 +10,7 @@ public class RequestResponse {
     private long handleMs;
     private int status;
 
-    public RequestResponse(boolean success) {
+    protected RequestResponse(boolean success) {
         host = Environment.HOST;
         requestId = Utils.getRandomAlNum(15);
         this.success = success;

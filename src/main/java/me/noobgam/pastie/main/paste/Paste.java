@@ -30,7 +30,7 @@ public class Paste {
             String owner,
             String content,
             @Nullable String language,
-            Instant instant
+            @Nullable Instant instant
     ) {
         this.id = id;
         this.owner = owner;
@@ -70,7 +70,6 @@ public class Paste {
         return language;
     }
 
-    @Nullable
     public Instant getInstant() {
         return instant;
     }
