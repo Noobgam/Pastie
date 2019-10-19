@@ -46,7 +46,8 @@ public class RecentAction implements AbstractHandler2 {
         }
         final List<Paste> pastes =
                 pasteStream
-                        .sorted((l, r) -> {
+                        // reversed
+                        .sorted((r, l) -> {
                             Instant lef = l.getInstant();
                             Instant rig = r.getInstant();
                             if (lef == null && rig == null) {

@@ -16,11 +16,36 @@ public class RecentPaste {
 
     public String getSnippet() {
         // XD?
+        int cnt = 0;
+        for (int i = 0; i < paste.getContent().length(); ++i) {
+            if (paste.getContent().charAt(i) == '\n') {
+                ++cnt;
+            }
+            if (cnt == 5) {
+                return paste.getContent().substring(0, i);
+            }
+        }
         return paste.getContent();
     }
 
     public String getId() {
         return paste.getId();
+    }
+
+    public String getOwner() {
+        return paste.getOwner();
+    }
+
+    public String getLang() {
+        return paste.getLanguage();
+    }
+
+    @Nullable
+    public Long getIsoMillis() {
+        Instant instant = paste.getInstant();
+        return instant != null
+                ? instant.toEpochMilli()
+                : null;
     }
 
     @Nullable

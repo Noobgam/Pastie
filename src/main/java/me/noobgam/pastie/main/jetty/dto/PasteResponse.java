@@ -33,7 +33,7 @@ public class PasteResponse extends RequestResponse {
     public Long getInstant() {
         Instant instant = paste.getInstant();
         return instant != null
-                ? instant.getEpochSecond()
+                ? instant.toEpochMilli()
                 : null;
     }
 }

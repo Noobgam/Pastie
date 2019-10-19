@@ -1,6 +1,7 @@
 package me.noobgam.pastie.main.jetty.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.noobgam.pastie.core.env.Environment;
 import me.noobgam.pastie.main.jetty.dto.RequestResponse;
 import org.eclipse.jetty.server.Request;
 
@@ -122,7 +123,11 @@ public class RequestContextHolder implements RequestContext {
 
     private static void fillHeaders(int status, HttpServletResponse response) {
         // for localhost testing rewrite local domain resolving rules.
-        response.addHeader("Access-Control-Allow-Origin", "paste.noobgam.me");
+        if (Environment.ENV == Environment.Type.DEV) {
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost");
+        } else {
+            response.addHeader("Access-Control-Allow-Origin", "paste.noobgam.me");
+        }
 
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         response.addHeader("Access-Control-Allow-Headers", "X-Paste-Lang");
