@@ -18,7 +18,7 @@ buildscript {
 
 jar {
     manifest {    
-        attributes 'MainClass': 'me.noobgam.pastie.main.core.Core'
+        attributes 'Main-Class': 'me.noobgam.pastie.main.core.Core'
     }
 }
 
