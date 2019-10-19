@@ -20,6 +20,10 @@ jar {
     manifest {    
         attributes 'Main-Class': 'me.noobgam.pastie.main.core.Core'
     }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 repositories {
