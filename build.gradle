@@ -16,6 +16,10 @@ buildscript {
     }
 }
 
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
 jar {
     manifest {    
         attributes 'Main-Class': 'me.noobgam.pastie.main.core.Core'
