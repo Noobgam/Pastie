@@ -2,6 +2,7 @@ package me.noobgam.pastie.main.background;
 
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -37,6 +38,7 @@ public class SchedulerTest {
     }
 
     @Test
+    @Ignore
     public void schedulerTest() throws Exception {
         ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue<>();
 
