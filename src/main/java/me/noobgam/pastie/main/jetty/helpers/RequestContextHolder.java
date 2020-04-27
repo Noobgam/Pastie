@@ -100,7 +100,6 @@ public class RequestContextHolder implements RequestContext {
             fillHeaders(status, response);
             result.setHandleMs(System.currentTimeMillis() - startMs);
             result.setStatus(status);
-            response.setCharacterEncoding("UTF-8");
             response.setStatus(status);
             response.getWriter().println(mapper.writeValueAsString(result));
             baseRequest.setHandled(true);
@@ -112,7 +111,7 @@ public class RequestContextHolder implements RequestContext {
     @Override
     public void respondPlainText(Integer status, String result) {
         try {
-            response.setContentType("text/plain");
+            response.setContentType("text/plain; charset=UTF-8");
             fillHeaders(status, response);
             response.setStatus(status);
             response.getWriter().print(result);
@@ -133,6 +132,7 @@ public class RequestContextHolder implements RequestContext {
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         response.addHeader("Access-Control-Allow-Headers", "X-Paste-Lang");
         response.addHeader("Access-Control-Allow-Credentials", "true");
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(status);
     }
 
