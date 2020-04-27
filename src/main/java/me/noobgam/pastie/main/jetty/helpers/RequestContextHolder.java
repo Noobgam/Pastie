@@ -100,6 +100,7 @@ public class RequestContextHolder implements RequestContext {
             fillHeaders(status, response);
             result.setHandleMs(System.currentTimeMillis() - startMs);
             result.setStatus(status);
+            response.setCharacterEncoding("UTF-8");
             response.setStatus(status);
             response.getWriter().println(mapper.writeValueAsString(result));
             baseRequest.setHandled(true);
